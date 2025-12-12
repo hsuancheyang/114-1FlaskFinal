@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}待辦事項管理系統{% endblock %}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+
+    <body>
+        <nav class="navbar">
+            <div class="container">
+                <a href="/" class="navbar-brand">待辦事項管理系統</a>
+                <div class="navbar-nav">
+                    <a href="{{ url_for('index') }}">待辦清單</a>
+                    <a href="{{ url_for('login') }}">Login</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                    <a href="{{ url_for('register') }}">註冊</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="flash-messages">
+                <div class="flash-message">{{ message }}</div>
+            </div>
+            <!--  放置待辦事項 or 其他：登入、註冊介面  透過 block content 注入 。 -->
+            {% block content %}{% endblock %}
+
+        </div>
+        {% include 'footer.html' %}
+    </body>
+</html>

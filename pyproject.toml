@@ -1,0 +1,11 @@
+[project]
+name = "114-1final"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "flask>=3.1.2",
+    "flask-login>=0.6.3",
+    "mysql-connector-python>=9.5.0",
+    "werkzeug>=3.1.4",
+]
