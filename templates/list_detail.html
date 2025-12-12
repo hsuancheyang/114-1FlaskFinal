@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}{{ todo_list.title }}{% endblock %}
+
+{% block content %}
+<div class="list-header" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>{{ todo_list.title }}</h1>
+        <div>
+            <a href="{{ url_for('delete_list', list_id=todo_list.id) }}" class="button"
+                onclick="return confirm('Are you sure?')">刪除待辦事項</a>
+        </div>
+    </div>
+    <p class="text-muted">擁有者：{{ todo_list.owner.username }}</p>
+</div>
+
+<!-- Add Task Form -->
+<div class="card" style="margin-bottom: 2rem;">
+    <h3>新增任務</h3>
+    <form action="{{ url_for('add_task', list_id=todo_list.id) }}" method="POST"
+        style="display: flex; gap: 1rem; align-items: flex-end;">
+        <div style="flex-grow: 1;">
+            <label for="content">任務</label>
+            <input type="text" name="content" required placeholder="What needs to be done?">
+        </div>
+        <div>
+            <label for="due_date">到期日</label>
+            <input type="date" name="due_date">
+        </div>
+        <button type="submit">新增</button>
+    </form>
+</div>
+
+<!-- Tasks List -->
+<div class="card">
+    <h3>任務列表</h3>
+    <div class="tasks-container">
+        {% for task in todo_list.tasks %}
+        <div class="task-item">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <form action="{{ url_for('toggle_task', task_id=task.id) }}" method="POST" style="margin: 0;">
+                    <input type="checkbox" onchange="this.form.submit()" {% if task.is_completed %}checked{% endif %}>
+                </form>
+                <span
+                    style="{% if task.is_completed %}text-decoration: line-through; color: var(--text-muted);{% endif %}">
+                    {{ task.content }}
+                </span>
+                {% if task.due_date %}
+                {% set days_left = (task.due_date - now).days %}
+                <span
+                    class="{% if not task.is_completed and days_left < 1 %}task-due-soon{% else %}text-muted{% endif %}"
+                    style="font-size: 0.875rem;">
+                    到期日: {{ task.due_date.strftime('%Y-%m-%d') }}
+                </span>
+                {% endif %}
+            </div>
+            <a href="{{ url_for('delete_task', task_id=task.id) }}"
+                style="color: var(--danger-color); text-decoration: none;">&times;</a>
+        </div>
+        {% else %}
+        <p class="text-muted">目前沒有任務</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Activity Log -->
+<div style="margin-top: 2rem;">
+    <h3>活動日誌</h3>
+    <ul style="list-style: none; padding: 0; color: var(--text-muted); font-size: 0.875rem;">
+        {% for log in logs %}
+        <li style="margin-bottom: 0.5rem;">
+            <strong>{{ log.user.username }}</strong> {{ log.action }} <span style="float: right;">{{
+                log.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

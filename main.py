@@ -11,6 +11,7 @@ from werkzeug.security import (
     generate_password_hash, check_password_hash
 )
 import mysql.connector
+from datetime import datetime
 
 from models import User, TodoList, Task
 
@@ -58,7 +59,48 @@ def load_user(user_id):
 @login_required
 def index():
     # current_user 會是上面 User 類別的實例
-    return render_template("dashboard.html", message=current_user.username)
+    cur = conn.cursor(dictionary=True)
+    
+    # 1. 取得使用者的所有列表
+    cur.execute("SELECT * FROM todo_list WHERE owner_id = %s", (current_user.id,))
+    list_rows = cur.fetchall()
+    
+    my_lists = []
+    for list_row in list_rows:
+        # Create TodoList object
+        # fix: handle created_at if it exists in row, else None
+        # Assuming DB schema matches SQL file which has created_at
+        current_list = TodoList(
+            list_row["id"], 
+            list_row["title"], 
+            list_row["owner_id"], 
+            list_row.get("created_at")
+        )
+        
+        # 2. 取得該列表的所有任務 (為了計算 task|length)
+        cur.execute("SELECT * FROM task WHERE list_id = %s", (current_list.id,))
+        task_rows = cur.fetchall()
+        
+        # 將任務資料轉為 Task 物件並附加到 list 物件上
+        # 這裡我們動態附加一個 tasks 屬性給 TodoList 實例，
+        # 這樣 template 裡的 list.tasks|length 就能運作
+        current_list.tasks = []
+        for task_row in task_rows:
+            task_obj = Task(
+                task_row["id"],
+                task_row["list_id"],
+                task_row["content"],
+                task_row.get("due_date"),
+                task_row.get("is_completed"),
+                task_row.get("created_at")
+            )
+            current_list.tasks.append(task_obj)
+            
+        my_lists.append(current_list)
+
+    cur.close()
+    
+    return render_template("dashboard.html", message=current_user.username, my_lists=my_lists)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -129,6 +171,112 @@ def logout():
     flash("已登出")
     return redirect(url_for("login"))
 
+
+@app.route("/create_list", methods=["GET", "POST"])
+@login_required
+def create_list():
+    if request.method == "POST":
+        title = request.form.get("title")
+        owner_id = current_user.id
+
+        cur = conn.cursor(dictionary=True)
+        cur.execute(
+            "INSERT INTO todo_list (title, owner_id, created_at) VALUES (%s, %s, NOW())",
+            (title, owner_id)
+        )
+        conn.commit()
+        cur.close()
+
+        flash("建立成功")
+        return redirect(url_for("index"))
+    
+    return render_template("create_list.html")
+
+@app.route('/list/<int:list_id>')
+@login_required
+def view_list(list_id):
+    cur = conn.cursor(dictionary=True)
+    
+    # 1. Fetch List
+    cur.execute("SELECT * FROM todo_list WHERE id = %s", (list_id,))
+    list_row = cur.fetchone()
+    
+    if not list_row:
+        cur.close()
+        return render_template('err_404.html', message='List not found'), 404
+
+    current_list = TodoList(
+        list_row["id"], 
+        list_row["title"], 
+        list_row["owner_id"], 
+        list_row.get("created_at")
+    )
+
+    # 2. Fetch Owner
+    cur.execute("SELECT * FROM user WHERE id = %s", (current_list.owner_id,))
+    user_row = cur.fetchone()
+    if user_row:
+        current_list.owner = User(user_row["id"], user_row["username"], user_row["password_hash"])
+    else:
+        current_list.owner = None # Should not happen ideally
+
+    # 3. Fetch Tasks
+    cur.execute("SELECT * FROM task WHERE list_id = %s", (current_list.id,))
+    task_rows = cur.fetchall()
+    
+    current_list.tasks = []
+    for task_row in task_rows:
+        task_obj = Task(
+            task_row["id"],
+            task_row["list_id"],
+            task_row["content"],
+            task_row.get("due_date"),
+            task_row.get("is_completed"),
+            task_row.get("created_at")
+        )
+        current_list.tasks.append(task_obj)
+
+    cur.close()
+
+    return render_template('list_detail.html', todo_list=current_list, now=datetime.now(), logs=[])
+
+@app.route('/list/<int:list_id>/delete')
+@login_required
+def delete_list(list_id):
+    cur = conn.cursor(dictionary=True)
+    cur.execute("SELECT * FROM todo_list WHERE id = %s", (list_id,))
+    todo_list = cur.fetchone()
+    if todo_list['owner_id'] != current_user.id:
+        flash('Permission denied.')
+        return redirect(url_for('dashboard'))
+    
+    cur.execute("DELETE FROM todo_list WHERE id = %s", (list_id,))
+    conn.commit()
+    cur.close()
+    flash('List deleted.')
+    return redirect(url_for('dashboard'))
+
+@app.route('/list/<int:list_id>/task/add', methods=['POST'])
+@login_required
+def add_task(list_id):
+    # Stub for adding task
+    flash("Function not implemented yet")
+    return redirect(url_for('view_list', list_id=list_id))
+
+@app.route('/task/<int:task_id>/toggle', methods=['POST'])
+@login_required
+def toggle_task(task_id):
+    # Stub for toggle task
+    # Need to find list_id to redirect
+    flash("Function not implemented yet")
+    return redirect(url_for('index')) # Fallback redirect
+
+@app.route('/task/<int:task_id>/delete')
+@login_required
+def delete_task(task_id):
+    # Stub for delete task
+    flash("Function not implemented yet")
+    return redirect(url_for('index')) # Fallback redirect
 
 # -------- errorhandler --------
 # - 404 錯誤處理 -
