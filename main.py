@@ -67,9 +67,6 @@ def index():
     
     my_lists = []
     for list_row in list_rows:
-        # Create TodoList object
-        # fix: handle created_at if it exists in row, else None
-        # Assuming DB schema matches SQL file which has created_at
         current_list = TodoList(
             list_row["id"], 
             list_row["title"], 
@@ -126,7 +123,7 @@ def login():
                 mode="login",
                 message="帳號或密碼錯誤。"
             )
-    else: # GET, POST以外的其他方法
+    else: # POST以外的其他方法（GET）
         return render_template("auth.html", mode="login", message="請輸入帳號和密碼。")
 
 
@@ -144,7 +141,7 @@ def register():
         if existing:
             cur.close()
             flash("帳號已存在")
-            return redirect(url_for("register"))
+            return redirect(url_for("register"), message="帳號已存在")
 
         password_hash = generate_password_hash(password)
         cur.execute(
@@ -156,7 +153,7 @@ def register():
         cur.close()
 
         flash("註冊成功，請登入")
-        return redirect(url_for("login"))
+        return redirect(url_for("login"), message="註冊成功，請登入")
     else: # GET, POST以外的其他方法
         return render_template(
             "auth.html",
@@ -169,7 +166,7 @@ def register():
 def logout():
     logout_user()  # 清除登入狀態
     flash("已登出")
-    return redirect(url_for("login"))
+    return redirect(url_for("login"), message="已登出")
 
 
 @app.route("/create_list", methods=["GET", "POST"])
@@ -188,22 +185,19 @@ def create_list():
         cur.close()
 
         flash("建立成功")
-        return redirect(url_for("index"))
+        return redirect(url_for("index"), message="建立成功")
     
     return render_template("create_list.html")
 
 @app.route('/list/<int:list_id>')
 @login_required
 def view_list(list_id):
-    cur = conn.cursor(dictionary=True)
-    
-    # 1. Fetch List
+    cur = conn.cursor(dictionary=True)    
     cur.execute("SELECT * FROM todo_list WHERE id = %s", (list_id,))
     list_row = cur.fetchone()
-    
     if not list_row:
         cur.close()
-        return render_template('err_404.html', message='List not found'), 404
+        return render_template('err_404.html', message='代辦事項不存在'), 404
 
     current_list = TodoList(
         list_row["id"], 
@@ -240,21 +234,22 @@ def view_list(list_id):
 
     return render_template('list_detail.html', todo_list=current_list, now=datetime.now(), logs=[])
 
-@app.route('/list/<int:list_id>/delete')
+@app.route('/list/delete/<int:list_id>', methods=['GET'])
 @login_required
 def delete_list(list_id):
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(dictionary=True)  
     cur.execute("SELECT * FROM todo_list WHERE id = %s", (list_id,))
     todo_list = cur.fetchone()
-    if todo_list['owner_id'] != current_user.id:
-        flash('Permission denied.')
-        return redirect(url_for('dashboard'))
+    if not todo_list:
+        cur.close()
+        return render_template('err_404.html', message='代辦事項不存在'), 404
     
     cur.execute("DELETE FROM todo_list WHERE id = %s", (list_id,))
     conn.commit()
     cur.close()
-    flash('List deleted.')
-    return redirect(url_for('dashboard'))
+    flash('代辦事項已刪除')
+    print('代辦事項已刪除')
+    return redirect(url_for('index'))
 
 @app.route('/list/<int:list_id>/task/add', methods=['POST'])
 @login_required
