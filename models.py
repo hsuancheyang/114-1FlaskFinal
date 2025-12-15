@@ -34,3 +34,14 @@ class Task:
 
     def __repr__(self):
         return f"<Task(id={self.id}, content='{self.content}', is_completed={self.is_completed})>"
+
+class ActivityLog:
+    def __init__(self, id, user_id, action, target_list_id=None, timestamp=None):
+        self.id = id
+        self.user_id = user_id
+        self.action = action
+        self.target_list_id = target_list_id
+        self.timestamp = timestamp
+
+    def __repr__(self):
+        return f"<ActivityLog(id={self.id}, user_id={self.user_id}, action='{self.action}')>"
