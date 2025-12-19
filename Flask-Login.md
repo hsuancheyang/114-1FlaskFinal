@@ -1,4 +1,4 @@
-## 基本安裝與初始化
+## 基本安裝
 ```bash
 pip install flask-login
 ```
