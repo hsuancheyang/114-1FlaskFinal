@@ -19,7 +19,7 @@
 - **後端**：Flask (Python 網頁框架)
 - **前端**：HTML, CSS, Jinja2 模板
 - **資料庫**：MySQL（XAMPP）
-- **認證**：Flask-Login, Werkzeug (密碼雜湊)
+- **認證**：Flask-Login [Flask-Login.md](Flask-Login.md), Werkzeug (密碼雜湊) [werkzeug.security.md](werkzeug.security.md)
 - **其他**：MySQL Connector for Python
 
 ## 安裝與設置
@@ -41,13 +41,13 @@
    ```bash
    pip install -r requirements.txt
    ```
-   或使用 pyproject.toml：
+   或 使用 pyproject.toml：
    ```bash
    pip install .
    ```
 
 3. **設置資料庫**：
-   - 安裝並啟動 MySQL 伺服器。
+   - 安裝並啟動 MySQL 伺服器（XAMPP）。
    - 創建資料庫並執行 SQL 腳本：
      ```bash
      mysql -u root -p < sql/1. user.sql
