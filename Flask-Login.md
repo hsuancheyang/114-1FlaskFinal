@@ -1,3 +1,8 @@
+## 基本安裝與初始化
+```bash
+pip install flask-login
+```
+
 Flask-Login 是一個「只負責登入狀態管理」的套件，幫系統設計師處理登入、登出、記住登入、`current_user` 等機制，但「不負責」資料庫、表單驗證與密碼驗證[1][2]。
 
 下面用條列方式把 Flask-Login 的常用功能與實務寫法整理起來，方便在專案中直接套用。
@@ -12,12 +17,6 @@ Flask-Login 是一個「只負責登入狀態管理」的套件，幫系統設�
   - 不幫你存取資料庫、不幫你驗證密碼、不幫你產生表單，這些都要自己寫或搭配 Flask-WTF、SQLAlchemy 等[4][5]。
 
 典型流程：使用者送出表單 → 你自己查 DB、驗證密碼 → 成功後呼叫 `login_user(user)` → 之後透過 `current_user` 取得登入者資訊[1][5]。
-
-## 基本安裝與初始化
-
-```bash
-pip install flask-login
-```
 
 ```python
 from flask import Flask
