@@ -67,16 +67,16 @@
 
 ## 使用說明
 
-1. **註冊帳號(route:register, auth.html)**：訪問 `/register` 頁面創建新帳號。
-2. **登入(route:login, auth.html)**：使用註冊的用戶名和密碼登入。
-3. **儀表板(route:index, dashboard.html)**：登入後查看您的待辦列表。
-4. **創建列表(route:create_list, create_list.html)**：在儀表板中創建新的待辦列表。
-5. **檢視列表(route:view_list, list_detail.html)**：檢視代辦事項內容，以及所屬任務清單。
-6. **刪除列表(route:delete_list)**:刪除代辦事項（要先確認所屬任務是否已清空才可刪除代辦事項）。
-6. **添加任務()**：在列表詳情頁面添加任務，設定到期日期。（未完成）
-7. **刪除任務()**：刪除任務。（未完成）
-8. **修改任務()**：編輯任務內容，延展到期時間。(未完成)
-9. **查看日誌**：檢查您的活動日誌。目前只能透過資料庫介面查閱。
+1. **註冊帳號(route:/register, method:register(), template:auth.html)**：訪問 `/register` 頁面創建新帳號。
+2. **登入(route:/login, method:login(), template:auth.html)**：使用註冊的用戶名和密碼登入。
+3. **儀表板(route:/, method:index(), template:dashboard.html)**：登入後查看您的待辦列表。
+4. **創建列表(route:/create_list, method:create_list(), template:create_list.html)**：在儀表板中創建新的待辦列表。
+5. **檢視列表(route:/list/<int:list_id>, method:view_list(list_id), template:list_detail.html)**：檢視代辦事項內容，以及所屬任務清單。
+6. **刪除列表(route:/list/delete/<int:list_id>, method:delete_list(list_id), template:dashboard.html)**:刪除代辦事項（要先確認所屬任務是否已清空才可刪除代辦事項）。
+7. **添加任務(route:/list/<int:list_id>/task/add, method:add_task(list_id), template:list_detail.html)**：在列表詳情頁面添加任務，設定到期日期。（未完成）
+8. **刪除任務(route:/task/<int:task_id>/delete, method:delete_task(task_id), template:list_detail.html)**：刪除任務。（未完成）
+9. **修改任務()**：編輯任務內容，延展到期時間。(未完成)
+10. **查看日誌(route:/logs, method:activity_log(), template:logs.html)**：檢查您的活動日誌。
 
 ## 專案結構
 

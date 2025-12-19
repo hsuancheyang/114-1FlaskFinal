@@ -13,7 +13,7 @@ from werkzeug.security import (
 import mysql.connector
 from datetime import datetime
 
-from models import User, TodoList, Task
+from models import User, TodoList, Task, Activity_log
 
 app = Flask(__name__)
 app.secret_key = "secret_key" # 最好是用一串無意義，結合數字、符號、字母的字串當作你正式系統hash-code編碼的種子
@@ -314,6 +314,30 @@ def delete_task(task_id):
     log_activity(current_user.id, f"Attempted to delete task {task_id}")
     flash("Function not implemented yet")
     return redirect(url_for('index')) # Fallback redirect
+
+@app.route('/logs')
+@login_required
+def activity_log():
+    cur = conn.cursor(dictionary=True)    
+    cur.execute("SELECT * FROM activity_log")
+    log_rows = cur.fetchall()
+
+    logs = []
+    for log_row in log_rows:
+        log_obj = Activity_log(
+            log_row["id"],
+            log_row["user_id"],
+            log_row["action"],
+            log_row["target_list_id"],
+            log_row["timestamp"]
+        )
+        logs.append(log_obj)
+    
+    cur.close()
+
+    log_activity(current_user.id, "check activity_logs")
+
+    return render_template('logs.html', logs = logs, message='活動紀錄一覽')
 
 # -------- errorhandler --------
 # - 404 錯誤處理 -

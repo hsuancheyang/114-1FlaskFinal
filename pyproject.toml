@@ -1,7 +1,7 @@
 [project]
 name = "114-1final"
 version = "0.1.0"
-description = "Add your description here"
+description = "這是一個基於 Flask 的網頁應用程式，用於管理個人待辦事項列表。使用者可以註冊帳號、登入系統、創建待辦列表（todo-list）、添加任務(task)、標記完成狀態。系統還記錄使用者的操作日誌(activity-log)。 此專案為致理科技大學資訊管理系 114-1 學期 進修部「伺服器端網頁程式設計」課程的課堂及期末專案。"
 requires-python = ">=3.13"
 dependencies = [
     "flask>=3.1.2",

@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(UserMixin):
     def __init__(self, id, username, password_hash):
-        self.id = str(id)           # get_id() 会回傳這個
+        self.id = str(id)           # get_id() 回傳這個
         self.username = username
         self.password_hash = password_hash
 
@@ -35,13 +35,13 @@ class Task:
     def __repr__(self):
         return f"<Task(id={self.id}, content='{self.content}', is_completed={self.is_completed})>"
 
-class ActivityLog:
-    def __init__(self, id, user_id, action, target_list_id=None, timestamp=None):
+class Activity_log:
+    def __init__(self, id, user_id, action, target_list_id, created_date):
         self.id = id
         self.user_id = user_id
         self.action = action
         self.target_list_id = target_list_id
-        self.timestamp = timestamp
+        self.created_at = created_date
 
     def __repr__(self):
-        return f"<ActivityLog(id={self.id}, user_id={self.user_id}, action='{self.action}')>"
+        return f"<activity_log(id={self.id}, user_id='{self.user_id}', action={self.action}, target_list_id={self.target_list_id}, created_at={self.created_at})>"    

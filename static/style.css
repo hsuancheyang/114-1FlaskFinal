@@ -8,6 +8,7 @@
     --danger-color: #ef4444;
     --success-color: #10b981;
     --warning-color: #f59e0b;
+    --table-tr-odd: #fbfbea;
 }
 
 body {
@@ -165,9 +166,21 @@ button:hover,
     margin-bottom: 0.5rem;
 }
 
+table.logs{
+    font-family: 'Courier New', Courier, monospace;
+    font-size: small;
+}
+table.logs td{
+    text-align: center;
+}
+table.logs tr:nth-child(odd){
+    background-color: var(--table-tr-odd)
+}
+
+
 footer {
     background-color: var(--bg-color);
     color: var(--text-color);
-    text-size: small;
+    font-size: small;
     text-align: center;
 }
