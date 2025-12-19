@@ -38,10 +38,11 @@
    ```
 
 2. **安裝依賴**：
+   使用專案中的 `requirements.txt` 檔：
    ```bash
    pip install -r requirements.txt
    ```
-   或 使用 pyproject.toml：
+   或 使用專案中的 `pyproject.toml` 檔案：
    ```bash
    pip install .
    ```
