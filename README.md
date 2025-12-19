@@ -66,11 +66,11 @@
    應用程式將在 `http://localhost:5000` 上運行。
 
 ## 使用說明
-| 功能 	| route  	| method  	| template | 功能 |
+| 功能 	| route  	| method  	| template | 說明 |
 |---	|---	|---	|---	|---  |
 | **註冊帳號** | /register | register() | auth.html | 訪問 `/register` 頁面創建新帳號。|
-| **儀表板** | /   	| index()  	| dashboard.html  	| 登入後查看您的待辦列表。  	|
-| **創建列表**  	| /create_list 	|  create_list() 	| create_list.html  	|  在儀表板中創建新的待辦列表。 	|
+| **儀表板** | / | index() | dashboard.html | 登入後查看您的待辦列表。 |
+| **創建列表** | /create_list | create_list() | create_list.html | 在儀表板中創建新的待辦列表。 |
 | **檢視列表** | /list/list_id |view_list(list_id)| list_detail.html | 檢視代辦事項內容，以及所屬任務清單。 |
 | **刪除列表** | /list/delete/list_id | delete_list(list_id) | dashboard.html | 刪除代辦事項（要先確認所屬任務是否已清空才可刪除代辦事項）。 |
 | **添加任務** | /list/list_id/task/add | add_task(list_id) | list_detail.html |在列表詳情頁面添加任務，設定到期日期。（未完成）|
