@@ -69,6 +69,7 @@
 | 功能 	| route  	| method  	| template | 說明 |
 |---	|---	|---	|---	|---  |
 | **註冊帳號** | /register | register() | auth.html | 訪問 `/register` 頁面創建新帳號。|
+| **登入帳號** | /login | login() | auth.html | 訪問 `/login` 頁面登入帳號。|
 | **儀表板** | / | index() | dashboard.html | 登入後查看您的待辦列表。 |
 | **創建列表** | /create_list | create_list() | create_list.html | 在儀表板中創建新的待辦列表。 |
 | **檢視列表** | /list/list_id |view_list(list_id)| list_detail.html | 檢視代辦事項內容，以及所屬任務清單。 |
