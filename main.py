@@ -293,7 +293,7 @@ def delete_list(list_id):
 def add_task(list_id):
     # Stub for adding task
     log_activity(current_user.id, f"Attempted to add task to list {list_id}", list_id)
-    # flash("Function not implemented yet")
+    
     cur = conn.cursor(dictionary=True) 
     cur.execute("SELECT * FROM todo_list WHERE id = %s", (list_id,))
     todo_list = cur.fetchone()
@@ -312,15 +312,26 @@ def toggle_task(task_id):
     # Stub for toggle task
     # Need to find list_id to redirect
     log_activity(current_user.id, f"Attempted to toggle task {task_id}")
-    flash("Function not implemented yet")
+    
     return redirect(url_for('index')) # Fallback redirect
 
 @app.route('/task/<int:task_id>/delete')
 @login_required
 def delete_task(task_id):
     # Stub for delete task
+    cur = conn.cursor(dictionary=True) 
+    cur.execute("SELECT * FROM task WHERE id = %s", (task_id,))
+    task = cur.fetchone()
+    if not task:
+        cur.close()
+        return render_template('err_404.html', message='代辦事項不存在'), 404
+    else:
+        cur.execute("DELETE FROM task WHERE id = %s", (task_id,))
+        conn.commit()
+        cur.close()
+        return redirect(url_for('view_list', list_id=task['list_id']))
     log_activity(current_user.id, f"Attempted to delete task {task_id}")
-    flash("Function not implemented yet")
+    
     return redirect(url_for('index')) # Fallback redirect
 
 @app.route('/logs')
