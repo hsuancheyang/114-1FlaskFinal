@@ -3,7 +3,7 @@ from flask import (
     url_for, request, flash
 )
 from flask_login import (
-    LoginManager, UserMixin,
+    LoginManager,
     login_user, logout_user,
     login_required, current_user
 )
@@ -41,7 +41,7 @@ conn = get_db_connection()
 # ----------------- Helper Functions -----------------
 def log_activity(user_id, action, target_list_id=None):
     """
-    記錄使用者操作到 activity_log 資料表
+    記錄使用者操作 activity_log 資料表
     """
     try:
         cur = conn.cursor()
@@ -87,11 +87,9 @@ def index():
             list_row["owner_id"], 
             list_row.get("created_at")
         )
-        
         # 2. 取得代辦事項的所有任務
         cur.execute("SELECT * FROM task WHERE list_id = %s", (current_list.id,))
         task_rows = cur.fetchall()
-        
         # 任務： Task 物件並附加到 代辦事項 List 物件上
         current_list.tasks = []
         for task_row in task_rows:
@@ -295,8 +293,18 @@ def delete_list(list_id):
 def add_task(list_id):
     # Stub for adding task
     log_activity(current_user.id, f"Attempted to add task to list {list_id}", list_id)
-    flash("Function not implemented yet")
-    return redirect(url_for('view_list', list_id=list_id))
+    # flash("Function not implemented yet")
+    cur = conn.cursor(dictionary=True) 
+    cur.execute("SELECT * FROM todo_list WHERE id = %s", (list_id,))
+    todo_list = cur.fetchone()
+    if not todo_list:
+        cur.close()
+        return render_template('err_404.html', message='代辦事項不存在'), 404
+    else:
+        cur.execute("INSERT INTO task (list_id, content, created_at, due_date) VALUES (%s, %s, NOW(), %s)", (list_id, request.form.get('content'), request.form.get('due_date')))
+        conn.commit()
+        cur.close()
+        return redirect(url_for('view_list', list_id=list_id))
 
 @app.route('/task/<int:task_id>/toggle', methods=['POST'])
 @login_required
